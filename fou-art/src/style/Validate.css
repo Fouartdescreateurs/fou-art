@@ -66,8 +66,6 @@ h3 {
 
 .result-box {
 
-    background: #577d0d;
-
     color: white;
 
     border-radius: 15px;
@@ -78,6 +76,35 @@ h3 {
 
     box-shadow: 0 8px 20px rgba(39,174,96,0.25);
 
+}
+
+.pdf-button {
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: #1b5e20;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.pdf-button:hover {
+  background-color: #1b5e20;
+}
+
+
+.result-box.score-green {
+  background-color: #577d0d;
+}
+
+.result-box.score-yellow {
+  background-color: orange;
+}
+
+.result-box.score-red {
+  background-color: red;
 }
 
 

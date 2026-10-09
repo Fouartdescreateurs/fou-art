@@ -1,7 +1,8 @@
 import "./../style/Question.css";
 import logo from "./../images/foufou.jpg"
 
-function Question({ question, onAnswer }) {
+function Question({question, onAnswer}) {
+
   const notes = ["NA/0", 1, 2, 3, 4, 5];
 
   return (
@@ -15,7 +16,7 @@ function Question({ question, onAnswer }) {
           {notes.map((note) => (
             <button
               key={note}
-              onClick={() => onAnswer(note)}
+              onClick={() => onAnswer(note === "NA/0" ? 0 : note)}
             >
               {note}
             </button>

@@ -2,95 +2,52 @@ import Question from "./composants/Question.tsx";
 import Score from "./composants/Score.tsx";
 import Validate from "./composants/Validate.tsx";
 import "./New.css";
-import { createClient } from "@supabase/supabase-js";
-import { supabase } from "./lib/supabase"
+
+import { supabase } from "./lib/supabase";
+import { getAllQuestion } from "./services/question.js";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 function New() {
-
-  const navigate = useNavigate();
-
-  useEffect(() => {
-  async function init() {
-    const session = sessionStorage.getItem("user");
-
-    if (!session) {
-      navigate("/fou-art/");
-      return;
-    }
-
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      sessionStorage.removeItem("user");
-      navigate("/fou-art/");
-      return;
-    }
-  }
-
-  init();
-}, [navigate]);
-
-  const questions = [
-    { id: 1, title: "Objectifs clairement définis" },
-    { id: 2, title: "Budget réalisé" },
-    { id: 3, title: "Date et horaires validés" },
-    { id: 4, title: "Lieu adapté à l'événement" },
-    { id: 5, title: "Capacité d'accueil suffisante" },
-    { id: 6, title: "Moyens techniques disponibles" },
-    { id: 7, title: "Communication préparée" },
-    { id: 8, title: "Équipe mobilisée" },
-    { id: 9, title: "Animations définies" },
-    { id: 10, title: "Partenaires confirmés" },
-    { id: 11, title: "Sécurité anticipée" },
-    { id: 12, title: "Assurances et autorisations" },
-    { id: 13, title: "Plan B prévu" },
-    { id: 14, title: "Gestion des ressources du site" },
-    { id: 15, title: "Suivi de fichier" },
-    { id: 16, title: "Motivation du porteur de projet" },
-    { id: 17, title: "Potentiel d'attractivité" },
-    { id: 18, title: "Faisabilité logistique" },
-    { id: 19, title: "Approbation du conseiller" },
-    { id: 20, title: "Risques identifiés et maîtrisés" },
-  ];
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [bonus, setBonus] = useState({});
+  const [projectInformation, setProjectInformation] = useState({});
   const [showScore, setShowScore] = useState(false);
   const [showValidate, setShowValidate] = useState(false);
   const [scoreData, setScoreData] = useState({});
   const [message, setMessage] = useState("");
-  const [questionToScore, setQuestionToScore] = useState({});
+  const [questionToScore, setQuestionToScore] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-   async function cancel() {
-  navigate('/fou-art/list');
-}
+  const navigate = useNavigate();
 
-  const goToPrev = () => {
+  function cancel() {
+    navigate("/fou-art/list");
+  }
+
+  function goToPrev() {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      setCurrentQuestion((prev) => prev - 1);
     }
-  };
+  }
 
-  async function handleSubmit(bonusData: {}) {
-    setBonus(bonusData);
-    console.log(bonusData)
-    console.log(bonus)
+  function handleSubmit(projectInformation) {
+    setProjectInformation(projectInformation);
     setShowValidate(true);
-  };
+  }
 
-  async function handleSave() {
+  function handleSave() {
+    navigate("/fou-art/list");
+  }
 
-    navigate('/fou-art/list');
-  };
-
-  const handleAnswer = (answer: number | string) => {
+  function handleAnswer(answer) {
     const question = questions[currentQuestion];
+
+    if (!question) {
+      return;
+    }
 
     const newAnswers = {
       ...answers,
@@ -99,10 +56,12 @@ function New() {
 
     setAnswers(newAnswers);
 
+
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+      setCurrentQuestion((prev) => prev + 1);
       return;
     }
+
 
     let score = 0;
 
@@ -112,18 +71,23 @@ function New() {
       }
     });
 
-    
-    
-    setQuestionToScore(Object.entries(newAnswers)
-      .map(([id, answer]) => ({
+
+    const questionsWithAnswers = Object.entries(newAnswers).map(
+      ([id, answer]) => ({
         question: questions.find(
           (question) => question.id === Number(id)
         ),
         answer,
-      })))
+      })
+    );
+
+    setQuestionToScore(questionsWithAnswers);
 
     const priorites = Object.entries(newAnswers)
-      .filter(([_, answer]) => answer === "NA" || Number(answer) < 3)
+      .filter(
+        ([_, answer]) =>
+          answer === "NA" || Number(answer) < 3
+      )
       .map(([id, answer]) => ({
         question: questions.find(
           (question) => question.id === Number(id)
@@ -131,19 +95,27 @@ function New() {
         answer,
       }));
 
-
     if (score >= 90) {
-      setMessage("Projet prêt au lancement. Validation recommandée.");
+      setMessage(
+        "Projet prêt au lancement. Validation recommandée."
+      );
     } else if (score >= 75) {
-      setMessage("Projet solide. Quelques ajustements sont conseillés avant validation.");
+      setMessage(
+        "Projet solide. Quelques ajustements sont conseillés avant validation."
+      );
     } else if (score >= 60) {
-      setMessage("Projet réalisable mais nécessitant un accompagnement renforcé. Ainsi que l'avis accompagnateur");
+      setMessage(
+        "Projet réalisable mais nécessitant un accompagnement renforcé. Ainsi que l'avis accompagnateur"
+      );
     } else if (score >= 40) {
-      setMessage("Projet insuffisamment préparé. Des actions correctives sont indispensables.");
-    } else if (score >= 0) {
-      setMessage("Projet non viable dans son état actuel. Une reffonte est recommandée avec toute mise en oeuvre.");
+      setMessage(
+        "Projet insuffisamment préparé. Des actions correctives sont indispensables."
+      );
+    } else {
+      setMessage(
+        "Projet non viable dans son état actuel. Une refonte est recommandée avec toute mise en œuvre."
+      );
     }
-
 
     setScoreData({
       score,
@@ -151,30 +123,81 @@ function New() {
     });
 
     setShowScore(true);
+  }
 
-    
-  };
+
+  useEffect(() => {
+    const loadPage = async () => {
+      try {
+
+        const {
+          data,
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error || !data.session) {
+          navigate("/fou-art");
+          return;
+        }
+
+
+        const allQuestions = await getAllQuestion();
+
+        if (!allQuestions || allQuestions.length === 0) {
+          console.error(
+            "Aucune question n'a été récupérée."
+          );
+
+          setQuestions([]);
+          return;
+        }
+
+
+        setQuestions(allQuestions);
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement de la page :",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPage();
+  }, [navigate]);
 
 
   return (
     <div>
       <title>FOU-ART</title>
-      {showValidate ? (
+
+      {loading ? (
+  
+        <p>Chargement des questions...</p>
+      ) : showValidate ? (
+
         <Validate
           message={message}
           score={scoreData?.score ?? 0}
           questions={questionToScore}
-          bonus={bonus}
+          projectInformation={projectInformation}
           onSave={handleSave}
         />
       ) : showScore ? (
+
         <Score
           message={message}
           score={scoreData?.score ?? 0}
           priorite={scoreData?.priorite ?? []}
           onSubmit={handleSubmit}
         />
+      ) : questions.length === 0 ? (
+        <p>
+          Aucune question disponible.
+        </p>
       ) : (
+
         <>
           <h2 className="progression">
             {currentQuestion + 1} / {questions.length}
@@ -197,8 +220,14 @@ function New() {
           )}
         </>
       )}
+
       <div className="cancel-button-container">
-      <button className="delete-button" onClick={() => cancel()}>Annuler</button>
+        <button
+          className="delete-button"
+          onClick={cancel}
+        >
+          Annuler
+        </button>
       </div>
     </div>
   );

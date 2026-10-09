@@ -1,0 +1,104 @@
+
+/* Conteneur général */
+.account-settings {
+  display: block;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.account-card-actions{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px
+}
+
+.account-card-actions-editing {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 2px
+}
+
+.delete-or-cancel{
+    background-color: red;
+}
+
+/* Grille de cartes */
+.account-settings .accounts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+/* Chaque carte occupe une colonne */
+.account-settings .account-card {
+
+    background:#f8f9fa;
+    border-radius:15px;
+    padding:20px;
+    border:1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 60%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.account-card-content,
+.account-field,
+.account-rights {
+  min-width: 0;
+}
+
+.account-card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-input,
+.account-search {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tablette : 2 colonnes */
+@media (max-width: 800px) {
+.account-card-actions{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px
+}
+  .account-settings .accounts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Téléphone : 1 colonne */
+@media (max-width: 550px) {
+    .account-card-actions{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px
+}
+  .account-settings {
+    padding: 14px;
+  }
+
+  .account-settings .accounts-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}

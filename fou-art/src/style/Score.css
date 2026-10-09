@@ -20,7 +20,6 @@
 }
 
 
-
 /* SCORE EN HAUT */
 
 .score-circle {
@@ -48,6 +47,18 @@
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 
     flex-shrink: 0;
+}
+
+.score-circle.score-green {
+  background-color: #577d0d;
+}
+
+.score-circle.score-yellow {
+  background-color: orange;
+}
+
+.score-circle.score-red {
+  background-color: red;
 }
 
 
@@ -317,3 +328,26 @@ button:hover {
 .delete-button{
         background-color: red;
     }
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container .score-title {
+  width: 350px;
+  margin: 0;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #577d0d;
+}

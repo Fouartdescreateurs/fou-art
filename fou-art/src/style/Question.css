@@ -13,11 +13,16 @@
     text-align: center;
 }
 
+.add-button {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 
 /* LOGO */
 
 .logo {
-    width: 120px;
+    width: 150px;
     max-width: 40vw;
 
     margin-bottom: 20px;
@@ -174,7 +179,7 @@
 
     .logo {
 
-        width: 90px;
+        width: 140px;
 
     }
 
@@ -210,3 +215,21 @@
 .delete-button{
         background-color: red;
     }
+
+    .email-button {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background-color: #577d0d;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.email-button:hover {
+  background-color: #568004;
+}

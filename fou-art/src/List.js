@@ -4,145 +4,178 @@ import Validate from "./composants/Validate.tsx";
 import { supabase } from "./lib/supabase";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  getProjectsForRestreint,
+  getProjects,
+  deleteProject,
+  countAllProject,
+  countRestreintProject
+} from "./services/project.js";
+import { getCurrentAccount } from "./services/user.js";
 import "./List.css";
 
 function List() {
-  const [dossier, setDossier] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [currentAccount, setCurrentAccount] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
 
+  const pageSize = 10;
   const navigate = useNavigate();
 
-  async function goToDossier(dossier_id) {
-  navigate(`/fou-art/show/${dossier_id}`);
-}
+  async function loadProjects(account, pageToLoad, search = null) {
+    let projects;
+    let count;
 
- async function goToNew() {
-  navigate('/fou-art/new');
-}
+    if (account.role === "restreint") {
+      projects = await getProjectsForRestreint(pageToLoad, pageSize, search);
+      count = await countRestreintProject(search)
+    } else {
+      projects = await getProjects(pageToLoad, pageSize, search);
+      count = await countAllProject(search)
+    }
 
-  async function getDossier(dossier_id) {
-  const { data, error } = await supabase
-    .from("dossier")
-    .select(`
-      *,
-      criteria(*)
-    `)
-    .eq("id", dossier_id)
-    .single();
-
-  if (error) {
-    console.error(error);
-    return null;
+    setProjects(projects);
+    setHasNextPage(count > pageToLoad * pageSize);
   }
-
-  return data;
-}
 
   useEffect(() => {
-  async function init() {
-    const session = sessionStorage.getItem("user");
+    document.title = "FOU-ART | Liste";
 
-    if (!session) {
-      navigate("/fou-art/");
-      return;
-    }
+    const loadPage = async () => {
+      const { data, error } = await supabase.auth.getSession();
 
-    const {
-      data: { user }
-    } = await supabase.auth.getUser();
+      if (error || !data.session) {
+        navigate("/fou-art/");
+        return;
+      }
 
-    if (!user) {
-      sessionStorage.removeItem("user");
-      navigate("/fou-art/");
-      return;
-    }
+      const account = await getCurrentAccount();
 
-    await getDossiers();
+      if (!account) {
+        return;
+      }
+
+      setCurrentAccount(account);
+
+      await loadProjects(account, 1);
+    };
+
+    loadPage();
+  }, [navigate]);
+
+  async function triggerProjectDelete(project_id) {
+    await deleteProject(project_id);
+    await loadProjects(currentAccount, page);
   }
-
-  init();
-}, [navigate]);
-
-  async function getDossiers() {
-  const { data, error } = await supabase
-    .from("dossier")
-    .select(`
-      *,
-      criteria(*)
-    `);
-
-  if (error) {
-    console.log(error);
-    return;
-  }
-  setDossier(data);
-}
-
-async function deleteDossier(dossier_id) {
-  const { error } = await supabase
-    .from("dossier")
-    .delete()
-    .eq("id", dossier_id);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  console.log("Dossier supprimé");
-  navigate("/fou-art/list");
-}
-
-
-
 
   return (
-  <div className="list-page">
-    <title>FOU-ART</title>
-    <h1 className="list-title">
-      Liste des dossiers
-    </h1>
+    <div className="list-page">
+      <h1 className="list-title">Liste des projets</h1>
 
-    <button className="new-button" onClick={() => goToNew()}>
-  Créer un projet
-</button>
+      <div className="header-action">
+        <input
+          type="text"
+          placeholder="Recherche..."
+          onChange={(e) => loadProjects(currentAccount, page, e.target.value)}
+        />
 
-{dossier.map((d) => (
-  <div className="dossier-card" key={d.id}
-  onClick={() => goToDossier(d.id)}>
-    <div
-      className="dossier-info"
-    >
-
-      <div className="score-badge">
-        Score : {d.score}/100
+        {currentAccount?.rights?.includes("INSERT_PROJECT") && (
+          <>
+            <button onClick={() => navigate("/fou-art/new")}>Créer</button>
+          </>
+        )}
       </div>
 
-      <p><strong>Numéro de projet :</strong> {d.numProject}</p>
+      {projects.map((p) => (
+        <div
+          className="dossier-card"
+          key={p.id}
+          onClick={() => navigate(`/fou-art/show/${p.id}`)}
+        >
+          <div className="dossier-info">
+            <div
+              className={`score-badge ${
+                p.score >= 74
+                  ? "score-green"
+                  : p.score >= 39
+                    ? "score-yellow"
+                    : "score-red"
+              }`}
+            >
+              Score : {p.score}/100
+            </div>
 
-      <p><strong>Accompagnateur :</strong> {d.owner}</p>
+            <p>
+              <strong>Numéro de projet :</strong> {p.project_number}
+            </p>
 
-      <p>
-        <strong>Date :</strong>{" "}
-        {new Date(d.created_at).toLocaleDateString("fr-FR")}
-      </p>
+            <p>
+              <strong>Nom du projet :</strong> {p.project_name}
+            </p>
+
+            <p>
+              <strong>Accompagnateur :</strong> {p.owner}
+            </p>
+
+            <p>
+              <strong>Date :</strong>{" "}
+              {new Date(p.created_at).toLocaleDateString("fr-FR")}
+            </p>
+          </div>
+
+          {((currentAccount?.rights?.includes("DELETE_PROJECT") &&
+            !p.protect_delete) ||
+            currentAccount?.role === "admin") && (
+            <div className="actions">
+              <button
+                className="delete-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+
+                  if (
+                    window.confirm("Voulez-vous vraiment supprimer le projet ?")
+                  ) {
+                    triggerProjectDelete(p.id);
+                  }
+                }}
+              >
+                Supprimer
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+
+      <div className="pagination">
+        <button
+          type="button"
+          onClick={() => {
+            const newPage = page - 1;
+            setPage(newPage);
+            loadProjects(currentAccount, newPage);
+          }}
+          disabled={page === 1}
+        >
+          ← Précédent
+        </button>
+
+        <span>Page {page}</span>
+
+        <button
+          type="button"
+          onClick={() => {
+            const newPage = page + 1;
+            setPage(newPage);
+            loadProjects(currentAccount, newPage);
+          }}
+          disabled={!hasNextPage}
+        >
+          Suivant →
+        </button>
+      </div>
     </div>
-
-    <div className="actions">
-      <button
-        className="delete-button"
-       onClick={(e) => {
-  e.stopPropagation();
-  deleteDossier(d.id);
-}}
-      >
-        Supprimer
-      </button>
-    </div>
-  </div>
-))}
-
-  </div>
-);
+  );
 }
 
 export default List;
