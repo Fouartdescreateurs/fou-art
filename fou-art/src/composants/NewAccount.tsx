@@ -34,7 +34,7 @@ function NewAccount() {
   const mailBody = `Bonjour,
 
 Voici le lien vers votre inscription :
-http://localhost:3000/fou-art/user/new/${currentAccount?.id}`;
+https://fouartdescreateurs.github.io/fou-art/${currentAccount?.id}`;
 
   const mailto = `mailto:${email}?subject=${encodeURIComponent(
     "Inscription",

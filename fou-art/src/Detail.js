@@ -232,7 +232,7 @@ function Detail() {
   }
 
   async function cancel() {
-    window.location.reload();
+    navigate(`/fou-art/show/${project_id_receive}`)
   }
 
   useEffect(() => {
