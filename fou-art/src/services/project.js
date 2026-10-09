@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-const currentTable = "project_test";
+const currentTable = "project";
 
 export async function getAllProjects() {
   const { data, error } = await supabase.from(currentTable).select(`*`);

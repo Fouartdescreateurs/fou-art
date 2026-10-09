@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-const currentTable = "question_test";
+const currentTable = "question";
 
 export async function getAllQuestion() {
   const { data, error } = await supabase

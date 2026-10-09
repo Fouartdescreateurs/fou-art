@@ -1,6 +1,6 @@
 import { supabase } from "../lib/supabase";
 
-const currentTable = "account_test";
+const currentTable = "account";
 
 export async function getCurrentAccount() {
   const {
