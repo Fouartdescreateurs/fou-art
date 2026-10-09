@@ -62,31 +62,31 @@ function App() {
         {currentAccount && (
           <>
             <Route
-              path="/fouart/list"
+              path="/fou-art/list"
               element={<List />}
             />
 
             {currentAccount.rights?.includes("INSERT_PROJECT") && (
               <Route
-                path="/fouart/new"
+                path="/fou-art/new"
                 element={<New />}
               />
             )}
 
             <Route
-              path="/fouart/show/:project_id_receive"
+              path="/fou-art/show/:project_id_receive"
               element={<Detail />}
             />
 
             {currentAccount.role === "admin" && (
               <>
                 <Route
-                  path="/fouart/settings"
+                  path="/fou-art/settings"
                   element={<Settings />}
                 />
 
                 <Route
-                  path="/fouart/account/new"
+                  path="/fou-art/account/new"
                   element={<NewAccount />}
                 />
               </>
@@ -95,12 +95,12 @@ function App() {
         )}
 
         <Route
-          path="/fouart/"
+          path="/fou-art/"
           element={<Login />}
         />
 
         <Route
-          path="/fouart/user/new/:account_id_receive"
+          path="/fou-art/user/new/:account_id_receive"
           element={<NewUser />}
         />
       </Routes>
