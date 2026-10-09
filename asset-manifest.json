@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/fouartdescreateurs.github.io/fouart/static/css/main.98ffb80a.css",
-    "main.js": "/fouartdescreateurs.github.io/fouart/static/js/main.5d72fab8.js",
+    "main.js": "/fouartdescreateurs.github.io/fouart/static/js/main.c226ceb6.js",
     "static/js/453.79194bb0.chunk.js": "/fouartdescreateurs.github.io/fouart/static/js/453.79194bb0.chunk.js",
     "static/media/foufou.jpg": "/fouartdescreateurs.github.io/fouart/static/media/foufou.8594b3aff349be9abd01.jpg",
     "static/media/smiley-green.png": "/fouartdescreateurs.github.io/fouart/static/media/smiley-green.0393b66a26de1bf304bc.png",
@@ -9,11 +9,11 @@
     "static/media/smiley-orange.png": "/fouartdescreateurs.github.io/fouart/static/media/smiley-orange.b0633b75eede3ba010d4.png",
     "index.html": "/fouartdescreateurs.github.io/fouart/index.html",
     "main.98ffb80a.css.map": "/fouartdescreateurs.github.io/fouart/static/css/main.98ffb80a.css.map",
-    "main.5d72fab8.js.map": "/fouartdescreateurs.github.io/fouart/static/js/main.5d72fab8.js.map",
+    "main.c226ceb6.js.map": "/fouartdescreateurs.github.io/fouart/static/js/main.c226ceb6.js.map",
     "453.79194bb0.chunk.js.map": "/fouartdescreateurs.github.io/fouart/static/js/453.79194bb0.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.98ffb80a.css",
-    "static/js/main.5d72fab8.js"
+    "static/js/main.c226ceb6.js"
   ]
 }
