@@ -87,7 +87,7 @@ function App() {
 
       <Routes>
         <Route
-          path="/"
+          path="/fou-art"
           element={
             isAuthenticated
               ? <Navigate to="fou-art/list" replace />
@@ -143,11 +143,6 @@ function App() {
               ? <NewAccount />
               : <Navigate to={isAuthenticated ? "/list" : "/"} replace />
           }
-        />
-
-        <Route
-          path="*"
-          element={<Navigate to="/fou-art" replace />}
         />
       </Routes>
     </>
